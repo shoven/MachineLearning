@@ -1,0 +1,91 @@
+
+#   Project: Machine Learning Project
+### Author: Shoven Shrivastava
+### Date: Saturday, August 22, 2015
+
+### Executive Summary:
+The goal of your project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. You may use any of the other variables to predict with. You should create a report describing how you built your model, how you used cross validation, what you think the expected out of sample error is, and why you made the choices you did. You will also use your prediction model to predict 20 different test cases.  
+
+### Data Load and training and test data:
+
+```{r
+trainUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+testUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+traindata <- read.csv(url(trainUrl), na.strings=c("NA","#DIV/0!",""))
+testdata <- read.csv(url(testUrl), na.strings=c("NA","#DIV/0!",""))
+}
+```
+  
+### Cleaning Data:
+
+
+```{r
+#### Simple Correlation analysis  
+correl <- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)
+names(traindata)[Hcorr]
+
+#### Model and Cross Validation
+tclt <- trainControl(method = "cv", number = 7, verboseIter=FALSE , preProcOptions="pca", allowParallel=TRUE)
+
+#### We will fit three models -   
+#### Random forest, a Neural net, a logitboost   
+rf <- train(classe ~ ., data = traindata, method = "rf", trControl= tclt)
+neuralnetwork <- train(classe ~ ., data = traindata, method = "nnet", trControl= tclt, verbose=FALSE)
+logitboost <- train(classe ~ ., data = train, method = "LogitBoost", trControl= tclt)
+
+modelname <- c("Random Forest","LogitBoost","Neural Net")
+Accuracy <- c(max(rf$results$Accuracy),
+              max(logitboost$results$Accuracy),
+              max(neuralnetwork$results$Accuracy))
+bestmodel <- cbind(modelname,Accuracy)
+
+randomforestfPred <- predict(rf, testdata)
+LogitBoostPredict <- predict(logitboost,testdata)
+
+prediction <- data.frame(cbind(randomforestfPred, LogitBoostPredict))
+print(prediction)
+knitr::kable(bestmodel)
+prediction <- data.frame(cbind(randomforestfPred, LogitBoostPredict))
+knitr::kable(prediction)
+
+}
+```  
+#### Accuracy  
+
+|modelname     |Accuracy          |
+|:-------------|:-----------------|
+|Random Forest |0.993935759702767 |
+|LogitBoost    |0.899511907702119 |
+|Neural Net    |0.434673982725722 |  
+
+
+#### As we can see Random forest gives us the best accuracy and we will focus on random forest results.  
+
+| randomforestfPred| LogitBoostPredict|
+|-----------------:|-----------------:|
+|                 2|                 2|
+|                 1|                 1|
+|                 2|                 1|
+|                 1|                 3|
+|                 1|                 1|
+|                 5|                 5|
+|                 4|                 4|
+|                 2|                 4|
+|                 1|                 1|
+|                 1|                 1|
+|                 2|                NA|
+|                 3|                NA|
+|                 2|                 2|
+|                 1|                 1|
+|                 5|                NA|
+|                 5|                 5|
+|                 1|                 1|
+|                 2|                 2|
+|                 2|                NA|
+|                 2|                 2|
+
+### Summary:
+
+** Random forest provides best accuracy and Logitboost model produces good results too. We cross validated the model with test data and compared results from two models. **
+
+
