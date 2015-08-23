@@ -16,16 +16,13 @@ testdata <- read.csv(url(testUrl), na.strings=c("NA","#DIV/0!",""))
 }
 ```  
   
-### Cleaning Data:  
-
- ** Remove near zero variables **  
- 
+### Cleaning Data: Remove near zero and variables with lots of missing valusue  
+   
 ```r{
 traindata <- traindata[, !nearzero$nzv]  
 dim(traindata)
 ``}
 
-** Remove variables if more than 60% of values are missing **
 ```r{
 removevarwithvaluemissing <- sapply(colnames(traindata), 
   function(x) if(sum(is.na(traindata[, x])) > 0.60*nrow(traindata)) {return(TRUE)
@@ -38,7 +35,6 @@ traindata <- traindata[, -(1:6)]
 }
 ```  
 
-** Do the same thing to TestData **
 ```r{
 testdata <- testdata[, !nearzero$nzv]
 
