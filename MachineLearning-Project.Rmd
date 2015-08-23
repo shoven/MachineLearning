@@ -53,7 +53,7 @@ testdata <- testdata[,-(1:6)]
 
 ** Simple Correlation analysis **  
 
-```{r
+```r{
   
 correl <- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)  
 names(traindata)[Hcorr]
@@ -65,7 +65,7 @@ names(traindata)[Hcorr]
 
 #### We will fit three models -   Random forest, a Neural net, a logitboost  
 
-```{r
+```r{
 tclt <- trainControl(method = "cv", number = 7, verboseIter=FALSE , preProcOptions="pca", allowParallel=TRUE)
 rf <- train(classe ~ ., data = traindata, method = "rf", trControl= tclt)
 neuralnetwork <- train(classe ~ ., data = traindata, method = "nnet", trControl= tclt, verbose=FALSE)
