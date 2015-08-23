@@ -9,26 +9,64 @@ The goal of your project is to predict the manner in which they did the exercise
 ### Data Load and training and test data:
 
 ```{r
-trainUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
-testUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
-traindata <- read.csv(url(trainUrl), na.strings=c("NA","#DIV/0!",""))
+trainUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"  
+testUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"  
+traindata <- read.csv(url(trainUrl), na.strings=c("NA","#DIV/0!",""))  
 testdata <- read.csv(url(testUrl), na.strings=c("NA","#DIV/0!",""))
 }
 ```
   
 ### Cleaning Data:
 
+ ** Remove near zero variables **
+```r{
+traindata <- traindata[, !nearzero$nzv]  
+dim(traindata)
+
+** Remove variables if more than 60% of values are missing **
+
+removevarwithvaluemissing <- sapply(colnames(traindata), 
+  function(x) if(sum(is.na(traindata[, x])) > 0.60*nrow(traindata)) {return(TRUE)
+}else{
+  return(FALSE)
+}
+)
+traindata <- traindata[, !removevarwithvaluemissing]  
+traindata <- traindata[, -(1:6)]
+
+** Do the same thing to TestData **
+testdata <- testdata[, !nearzero$nzv]
+
+removevarwithvaluemissingtestdata <- sapply(colnames(testdata), 
+                                    function(x) if(sum(is.na(testdata[, x])) > 0.60*nrow(traindata)) {return(TRUE)
+                                    }else{
+                                      return(FALSE)
+                                    }
+)
+
+testdata <- testdata[,-(1:6)]
+}
+```  
+
+** Simple Correlation analysis **  
 
 ```{r
-#### Simple Correlation analysis  
-correl <- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)
+  
+correl <- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)  
 names(traindata)[Hcorr]
+}
+```  
 
 #### Model and Cross Validation
-tclt <- trainControl(method = "cv", number = 7, verboseIter=FALSE , preProcOptions="pca", allowParallel=TRUE)
 
-#### We will fit three models -   
-#### Random forest, a Neural net, a logitboost   
+```{r
+tclt <- trainControl(method = "cv", number = 7, verboseIter=FALSE , preProcOptions="pca", allowParallel=TRUE)
+}
+```
+
+**  We will fit three models -   Random forest, a Neural net, a logitboost  **
+
+```{r
 rf <- train(classe ~ ., data = traindata, method = "rf", trControl= tclt)
 neuralnetwork <- train(classe ~ ., data = traindata, method = "nnet", trControl= tclt, verbose=FALSE)
 logitboost <- train(classe ~ ., data = train, method = "LogitBoost", trControl= tclt)
@@ -49,7 +87,8 @@ prediction <- data.frame(cbind(randomforestfPred, LogitBoostPredict))
 knitr::kable(prediction)
 
 }
-```  
+``` 
+
 #### Accuracy  
 
 |modelname     |Accuracy          |
@@ -59,7 +98,7 @@ knitr::kable(prediction)
 |Neural Net    |0.434673982725722 |  
 
 
-#### As we can see Random forest gives us the best accuracy and we will focus on random forest results.  
+** As we can see Random forest gives us the best accuracy and we will focus on random forest results.  **
 
 | randomforestfPred| LogitBoostPredict|
 |-----------------:|-----------------:|

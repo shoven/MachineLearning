@@ -75,25 +75,31 @@ img {
 </div>
 <div id="data-load-and-training-and-test-data" class="section level3">
 <h3>Data Load and training and test data:</h3>
-<p><code>{r trainUrl &lt;- &quot;http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot; testUrl &lt;- &quot;http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot; traindata &lt;- read.csv(url(trainUrl), na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;,&quot;&quot;)) testdata &lt;- read.csv(url(testUrl), na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;,&quot;&quot;)) }</code></p>
+<p><code>{r trainUrl &lt;- &quot;http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;   testUrl &lt;- &quot;http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;   traindata &lt;- read.csv(url(trainUrl), na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;,&quot;&quot;))   testdata &lt;- read.csv(url(testUrl), na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;,&quot;&quot;)) }</code></p>
 </div>
 <div id="cleaning-data" class="section level3">
 <h3>Cleaning Data:</h3>
-<p>```{r #### Simple Correlation analysis<br />correl &lt;- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8) names(traindata)[Hcorr]</p>
+<p>** Remove near zero variables ** ```r{ traindata &lt;- traindata[, !nearzero$nzv]<br />dim(traindata)</p>
+<p>** Remove variables if more than 60% of values are missing **</p>
+<p>removevarwithvaluemissing &lt;- sapply(colnames(traindata), function(x) if(sum(is.na(traindata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{ return(FALSE) } ) traindata &lt;- traindata[, !removevarwithvaluemissing]<br />traindata &lt;- traindata[, -(1:6)]</p>
+<p>** Do the same thing to TestData ** testdata &lt;- testdata[, !nearzero$nzv]</p>
+<p>removevarwithvaluemissingtestdata &lt;- sapply(colnames(testdata), function(x) if(sum(is.na(testdata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{ return(FALSE) } )</p>
+<p>testdata &lt;- testdata[,-(1:6)] } ```</p>
+<p>** Simple Correlation analysis **</p>
+<p>```{r</p>
+<p>correl &lt;- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)<br />names(traindata)[Hcorr] } ```</p>
 <div id="model-and-cross-validation" class="section level4">
 <h4>Model and Cross Validation</h4>
-<p>tclt &lt;- trainControl(method = “cv”, number = 7, verboseIter=FALSE , preProcOptions=“pca”, allowParallel=TRUE)</p>
-</div>
-<div id="we-will-fit-three-models--" class="section level4">
-<h4>We will fit three models -</h4>
-</div>
-<div id="random-forest-a-neural-net-a-logitboost" class="section level4">
-<h4>Random forest, a Neural net, a logitboost</h4>
-<p>rf &lt;- train(classe ~ ., data = traindata, method = “rf”, trControl= tclt) neuralnetwork &lt;- train(classe ~ ., data = traindata, method = “nnet”, trControl= tclt, verbose=FALSE) logitboost &lt;- train(classe ~ ., data = train, method = “LogitBoost”, trControl= tclt)</p>
+<p><code>{r tclt &lt;- trainControl(method = &quot;cv&quot;, number = 7, verboseIter=FALSE , preProcOptions=&quot;pca&quot;, allowParallel=TRUE) }</code></p>
+<p>** We will fit three models - Random forest, a Neural net, a logitboost **</p>
+<p>```{r rf &lt;- train(classe ~ ., data = traindata, method = “rf”, trControl= tclt) neuralnetwork &lt;- train(classe ~ ., data = traindata, method = “nnet”, trControl= tclt, verbose=FALSE) logitboost &lt;- train(classe ~ ., data = train, method = “LogitBoost”, trControl= tclt)</p>
 <p>modelname &lt;- c(“Random Forest”,“LogitBoost”,“Neural Net”) Accuracy &lt;- c(max(rf<span class="math">\(results\)</span>Accuracy), max(logitboost<span class="math">\(results\)</span>Accuracy), max(neuralnetwork<span class="math">\(results\)</span>Accuracy)) bestmodel &lt;- cbind(modelname,Accuracy)</p>
 <p>randomforestfPred &lt;- predict(rf, testdata) LogitBoostPredict &lt;- predict(logitboost,testdata)</p>
 <p>prediction &lt;- data.frame(cbind(randomforestfPred, LogitBoostPredict)) print(prediction) knitr::kable(bestmodel) prediction &lt;- data.frame(cbind(randomforestfPred, LogitBoostPredict)) knitr::kable(prediction)</p>
-<p>} ```<br />#### Accuracy</p>
+<p>} ```</p>
+</div>
+<div id="accuracy" class="section level4">
+<h4>Accuracy</h4>
 <table>
 <thead>
 <tr class="header">
@@ -116,9 +122,7 @@ img {
 </tr>
 </tbody>
 </table>
-</div>
-<div id="as-we-can-see-random-forest-gives-us-the-best-accuracy-and-we-will-focus-on-random-forest-results." class="section level4">
-<h4>As we can see Random forest gives us the best accuracy and we will focus on random forest results.</h4>
+<p>** As we can see Random forest gives us the best accuracy and we will focus on random forest results. **</p>
 <table>
 <thead>
 <tr class="header">
