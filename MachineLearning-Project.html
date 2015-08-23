@@ -79,27 +79,29 @@ img {
 </div>
 <div id="cleaning-data" class="section level3">
 <h3>Cleaning Data:</h3>
-<p>** Remove near zero variables ** ```r{ traindata &lt;- traindata[, !nearzero$nzv]<br />dim(traindata)</p>
-<p>** Remove variables if more than 60% of values are missing **</p>
-<p>removevarwithvaluemissing &lt;- sapply(colnames(traindata), function(x) if(sum(is.na(traindata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{ return(FALSE) } ) traindata &lt;- traindata[, !removevarwithvaluemissing]<br />traindata &lt;- traindata[, -(1:6)]</p>
-<p>** Do the same thing to TestData ** testdata &lt;- testdata[, !nearzero$nzv]</p>
+<p>** Remove near zero variables **</p>
+<p>`<code>r{ traindata &lt;- traindata[, !nearzero$nzv]   dim(traindata)</code>}</p>
+<p>** Remove variables if more than 60% of values are missing ** <code>r{ removevarwithvaluemissing &lt;- sapply(colnames(traindata),    function(x) if(sum(is.na(traindata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{   return(FALSE) } ) traindata &lt;- traindata[, !removevarwithvaluemissing]   traindata &lt;- traindata[, -(1:6)] }</code></p>
+<p>** Do the same thing to TestData ** ```r{ testdata &lt;- testdata[, !nearzero$nzv]</p>
 <p>removevarwithvaluemissingtestdata &lt;- sapply(colnames(testdata), function(x) if(sum(is.na(testdata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{ return(FALSE) } )</p>
 <p>testdata &lt;- testdata[,-(1:6)] } ```</p>
 <p>** Simple Correlation analysis **</p>
 <p>```{r</p>
 <p>correl &lt;- caret::findCorrelation(cor(traindata[, -53]), cutoff=0.8)<br />names(traindata)[Hcorr] } ```</p>
-<div id="model-and-cross-validation" class="section level4">
-<h4>Model and Cross Validation</h4>
-<p><code>{r tclt &lt;- trainControl(method = &quot;cv&quot;, number = 7, verboseIter=FALSE , preProcOptions=&quot;pca&quot;, allowParallel=TRUE) }</code></p>
-<p>** We will fit three models - Random forest, a Neural net, a logitboost **</p>
-<p>```{r rf &lt;- train(classe ~ ., data = traindata, method = “rf”, trControl= tclt) neuralnetwork &lt;- train(classe ~ ., data = traindata, method = “nnet”, trControl= tclt, verbose=FALSE) logitboost &lt;- train(classe ~ ., data = train, method = “LogitBoost”, trControl= tclt)</p>
+</div>
+<div id="model-and-cross-validation" class="section level3">
+<h3>Model and Cross Validation</h3>
+<div id="we-will-fit-three-models---random-forest-a-neural-net-a-logitboost" class="section level4">
+<h4>We will fit three models - Random forest, a Neural net, a logitboost</h4>
+<p>```{r tclt &lt;- trainControl(method = “cv”, number = 7, verboseIter=FALSE , preProcOptions=“pca”, allowParallel=TRUE) rf &lt;- train(classe ~ ., data = traindata, method = “rf”, trControl= tclt) neuralnetwork &lt;- train(classe ~ ., data = traindata, method = “nnet”, trControl= tclt, verbose=FALSE) logitboost &lt;- train(classe ~ ., data = train, method = “LogitBoost”, trControl= tclt)</p>
 <p>modelname &lt;- c(“Random Forest”,“LogitBoost”,“Neural Net”) Accuracy &lt;- c(max(rf<span class="math">\(results\)</span>Accuracy), max(logitboost<span class="math">\(results\)</span>Accuracy), max(neuralnetwork<span class="math">\(results\)</span>Accuracy)) bestmodel &lt;- cbind(modelname,Accuracy)</p>
 <p>randomforestfPred &lt;- predict(rf, testdata) LogitBoostPredict &lt;- predict(logitboost,testdata)</p>
 <p>prediction &lt;- data.frame(cbind(randomforestfPred, LogitBoostPredict)) print(prediction) knitr::kable(bestmodel) prediction &lt;- data.frame(cbind(randomforestfPred, LogitBoostPredict)) knitr::kable(prediction)</p>
 <p>} ```</p>
 </div>
-<div id="accuracy" class="section level4">
-<h4>Accuracy</h4>
+</div>
+<div id="accuracy" class="section level3">
+<h3>Accuracy</h3>
 <table>
 <thead>
 <tr class="header">
@@ -213,7 +215,6 @@ img {
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 <div id="summary" class="section level3">
 <h3>Summary:</h3>

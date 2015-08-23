@@ -14,17 +14,19 @@ testUrl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
 traindata <- read.csv(url(trainUrl), na.strings=c("NA","#DIV/0!",""))  
 testdata <- read.csv(url(testUrl), na.strings=c("NA","#DIV/0!",""))
 }
-```
+```  
   
-### Cleaning Data:
+### Cleaning Data:  
 
- ** Remove near zero variables **
+ ** Remove near zero variables **  
+ 
 ```r{
 traindata <- traindata[, !nearzero$nzv]  
 dim(traindata)
+``}
 
 ** Remove variables if more than 60% of values are missing **
-
+```r{
 removevarwithvaluemissing <- sapply(colnames(traindata), 
   function(x) if(sum(is.na(traindata[, x])) > 0.60*nrow(traindata)) {return(TRUE)
 }else{
@@ -33,8 +35,11 @@ removevarwithvaluemissing <- sapply(colnames(traindata),
 )
 traindata <- traindata[, !removevarwithvaluemissing]  
 traindata <- traindata[, -(1:6)]
+}
+```  
 
 ** Do the same thing to TestData **
+```r{
 testdata <- testdata[, !nearzero$nzv]
 
 removevarwithvaluemissingtestdata <- sapply(colnames(testdata), 
@@ -48,6 +53,7 @@ testdata <- testdata[,-(1:6)]
 }
 ```  
 
+
 ** Simple Correlation analysis **  
 
 ```{r
@@ -57,16 +63,13 @@ names(traindata)[Hcorr]
 }
 ```  
 
-#### Model and Cross Validation
+
+### Model and Cross Validation  
+
+#### We will fit three models -   Random forest, a Neural net, a logitboost  
 
 ```{r
 tclt <- trainControl(method = "cv", number = 7, verboseIter=FALSE , preProcOptions="pca", allowParallel=TRUE)
-}
-```
-
-**  We will fit three models -   Random forest, a Neural net, a logitboost  **
-
-```{r
 rf <- train(classe ~ ., data = traindata, method = "rf", trControl= tclt)
 neuralnetwork <- train(classe ~ ., data = traindata, method = "nnet", trControl= tclt, verbose=FALSE)
 logitboost <- train(classe ~ ., data = train, method = "LogitBoost", trControl= tclt)
@@ -89,7 +92,7 @@ knitr::kable(prediction)
 }
 ``` 
 
-#### Accuracy  
+### Accuracy  
 
 |modelname     |Accuracy          |
 |:-------------|:-----------------|
