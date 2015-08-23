@@ -79,7 +79,7 @@ img {
 </div>
 <div id="cleaning-data-remove-near-zero-and-variables-with-lots-of-missing-valusue" class="section level3">
 <h3>Cleaning Data: Remove near zero and variables with lots of missing valusue</h3>
-<p>`<code>r{ traindata &lt;- traindata[, !nearzero$nzv]   dim(traindata)</code>}</p>
+<p><code>r{ traindata &lt;- traindata[, !nearzero$nzv]   dim(traindata) }</code></p>
 <p><code>r{ removevarwithvaluemissing &lt;- sapply(colnames(traindata),    function(x) if(sum(is.na(traindata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{   return(FALSE) } ) traindata &lt;- traindata[, !removevarwithvaluemissing]   traindata &lt;- traindata[, -(1:6)] }</code></p>
 <p>```r{ testdata &lt;- testdata[, !nearzero$nzv]</p>
 <p>removevarwithvaluemissingtestdata &lt;- sapply(colnames(testdata), function(x) if(sum(is.na(testdata[, x])) &gt; 0.60*nrow(traindata)) {return(TRUE) }else{ return(FALSE) } )</p>

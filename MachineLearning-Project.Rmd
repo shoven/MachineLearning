@@ -21,7 +21,8 @@ testdata <- read.csv(url(testUrl), na.strings=c("NA","#DIV/0!",""))
 ```r{
 traindata <- traindata[, !nearzero$nzv]  
 dim(traindata)
-``}
+}
+```
 
 ```r{
 removevarwithvaluemissing <- sapply(colnames(traindata), 
